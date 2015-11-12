@@ -1,54 +1,49 @@
 # Getting-and-Cleaning-data-course-project
-filesPath <- "C:/Users/jb/Documents/Analytics course/coursera getting and cleaning data/course project/UCI HAR Dataset"
-setwd(filesPath)
-if(!file.exists("./data")){dir.create("./data")}
-fileUrl <- "https://d396qusza40orc.cloudfront.net/getdata%2Fprojectfiles%2FUCI%20HAR%20Dataset.zip"
-download.file(fileUrl,destfile="./data/Dataset.zip",method="curl")
+if (!getwd() == "./out-of-box-samples") {
+    dir.create("./out-of-box-samples")
+}
+rm(list = ls(all = TRUE))
+library(plyr) 
+library(data.table) 
+library(dplyr) 
+get <- tempfile()
+download.file("http://d396qusza40orc.cloudfront.net/getdata%2Fprojectfiles%2FUCI%20HAR%20Dataset.zip",get)
+unzip(get, list = TRUE)
 
-###Unzip DataSet to /data directory
-unzip(zipfile="./data/Dataset.zip",exdir="./data")
-###Load required packages
-library(dplyr)
-library(data.table)
-library(tidyr)
-filesPath <- "C:/Users/jb/Documents/Analytics course/coursera getting and cleaning data/course project/UCI HAR Dataset"
-# Read subject files
-dataSubjectTrain <- tbl_df(read.table(file.path(filesPath, "train", "subject_train.txt")))
-dataSubjectTest  <- tbl_df(read.table(file.path(filesPath, "test" , "subject_test.txt" )))
+dataActivityTest <- read.table(unzip(get, "UCI HAR Dataset/test/y_test.txt"))
+dataSubjectTest  <- read.table(unzip(get, "UCI HAR Dataset/test/X_test.txt"))
+DataTest <- read.table(unzip(get, "UCI HAR Dataset/test/subject_test.txt"))
 
-# Read activity files
-dataActivityTrain <- tbl_df(read.table(file.path(filesPath, "train", "Y_train.txt")))
-dataActivityTest  <- tbl_df(read.table(file.path(filesPath, "test" , "Y_test.txt" )))
+dataActivityTrain <- read.table(unzip(get, "UCI HAR Dataset/train/y_train.txt"))
+dataSubjectTrain  <- read.table(unzip(get, "UCI HAR Dataset/train/X_train.txt"))
+DataTrain <- read.table(unzip(get, "UCI HAR Dataset/train/subject_train.txt"))
 
-#Read data files.
-dataTrain <- tbl_df(read.table(file.path(filesPath, "train", "X_train.txt" )))
-dataTest  <- tbl_df(read.table(file.path(filesPath, "test" , "X_test.txt" )))
-# for both Activity and Subject files this will merge the training and the test sets by row binding 
-#and rename variables "subject" and "activityNum"
-alldataSubject <- rbind(dataSubjectTrain, dataSubjectTest)
-setnames(alldataSubject, "V1", "subject")
-alldataActivity<- rbind(dataActivityTrain, dataActivityTest)
-setnames(alldataActivity, "V1", "activityNum")
+Features <- read.table(unzip(get, "UCI HAR Dataset/features.txt"))
 
-#combine the DATA training and test files
-dataTable <- rbind(dataTrain, dataTest)
+colnames(dataSubjectTrain) <- t(Features[2])
+colnames(dataSubjectTest) <- t(Features[2])
+dataSubjectTrain$activities <- dataActivityTrain[, 1]
+dataSubjectTrain$participants <- DataTrain[, 1]
+dataSubjectTest$activities <- dataActivityTest[, 1]
+dataSubjectTest$participants <- DataTest[, 1]
 
-# name variables according to feature e.g.(V1 = "tBodyAcc-mean()-X")
-dataFeatures <- tbl_df(read.table(file.path(filesPath, "features.txt")))
-setnames(dataFeatures, names(dataFeatures), c("featureNum", "featureName"))
-colnames(dataTable) <- dataFeatures$featureName
 
-#column names for activity labels
-activityLabels<- tbl_df(read.table(file.path(filesPath, "activity_labels.txt")))
-setnames(activityLabels, names(activityLabels), c("activityNum","activityName"))
+#1 Merges the training and the test sets to create one data set.
+Master <- cbind(dataSubjectTrain, dataActivityTest)
+duplicated(colnames(Master))
+Master <- Master[, !duplicated(colnames(Master))]
 
-# Merge columns
-alldataSubjAct<- cbind(alldataSubject, alldataActivity)
-dataTable <- cbind(alldataSubjAct, dataTable)
-# Reading "features.txt" and extracting only the mean and standard deviation
+training_data <- cbind(cbind(dataSubjectTrain, DataTrain), dataSubjectTrain)
+test_data <- cbind(cbind(dataSubjectTest, DataTest), dataActivityTest)
+Merge <- cbind(training_data, test_data)
+
+labels <- rbind(rbind(Features, c(562, "Subject")), c(563, "ActivityId"))[,2]
+names(merge) <- labels
+
+#2  Extracts only the measurements on the mean and standard deviation for each measurement. 
 dataFeaturesMeanStd <- grep("mean\\(\\)|std\\(\\)",dataFeatures$featureName,value=TRUE) #var name
 
-# Taking only measurements for the mean and standard deviation and add "subject","activityNum"
+#3 Uses descriptive activity names to name the activities in the data set
 
 dataFeaturesMeanStd <- union(c("subject","activityNum"), dataFeaturesMeanStd)
 dataTable<- subset(dataTable,select=dataFeaturesMeanStd) 
@@ -56,7 +51,7 @@ dataTable<- subset(dataTable,select=dataFeaturesMeanStd)
 dataTable <- merge(activityLabels, dataTable , by="activityNum", all.x=TRUE)
 dataTable$activityName <- as.character(dataTable$activityName)
 
-## create dataTable with variable means sorted by subject and Activity
+#4 Appropriately labels the data set with descriptive variable names. 
 dataTable$activityName <- as.character(dataTable$activityName)
 dataAggr<- aggregate(. ~ subject - activityName, data = dataTable, mean) 
 dataTable<- tbl_df(arrange(dataAggr,subject,activityName))
