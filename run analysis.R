@@ -38,10 +38,15 @@ all_data = all_data[data_mean_std==TRUE];
 ###########################################################################
 # 3. Uses descriptive activity names to name the activities in the data set
 ###########################################################################
+all_data = merge(all_data,activityType,by='activityId',all.x=TRUE);
+colNames  = colnames(all_data); 
 
 data_mean_std <- join(data_mean_std, activity_labels, by = "ActivityId", match = "first")
 data_mean_std <- data_mean_std[,-1]
 colNames  = colnames(data_mean_std); 
+##############################################################
+# 4. Appropriately labels the data set with descriptive names.
+##############################################################
 for (i in 1:length(colNames)) 
 {
   colNames[i] = gsub("\\()","",colNames[i])
