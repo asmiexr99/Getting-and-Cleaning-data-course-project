@@ -1,4 +1,5 @@
 1. Merges the training and the test sets to create one data set.
+2. 
 
 After setting the source directory for the files, read into tables the data located in features.txt,activity_labels.txt,
 subject_train.txt, x_train.txt, y_train.txt, subject_test.txt, x_test.txt and y_test.txt. Assign column names and merge to create one data set.
