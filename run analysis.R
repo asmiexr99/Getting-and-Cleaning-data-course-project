@@ -27,14 +27,14 @@ training_data <- cbind(cbind(x_train, subject_train), y_train)
 test_data <- cbind(cbind(x_test, subject_test), y_test)
 all_data <- rbind(training_data, test_data)
 sensor_labels <- rbind(rbind(Features, c(562, "Subject")), c(563, "ActivityId"))[,2]
-names(sensor_data) <- sensor_labels
+colNames  = colnames(all_data); 
 
 ############################################################################################
 # 2. Extracts only the measurements on the mean and standard deviation for each measurement.
 ############################################################################################
 
-data_mean_std <- sensor_data[,grepl("mean|std|Subject|ActivityId", names(sensor_data))]
-
+data_mean_std <- (grepl("activity..",colNames) | grepl("subject..",colNames) | grepl("-mean..",colNames) & !grepl("-meanFreq..",colNames) & !grepl("mean..-",colNames) | grepl("-std..",colNames) & !grepl("-std()..-",colNames));
+all_data = all_data[data_mean_std==TRUE];
 ###########################################################################
 # 3. Uses descriptive activity names to name the activities in the data set
 ###########################################################################
