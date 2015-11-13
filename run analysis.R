@@ -41,7 +41,23 @@ data_mean_std <- sensor_data[,grepl("mean|std|Subject|ActivityId", names(sensor_
 
 data_mean_std <- join(data_mean_std, activity_labels, by = "ActivityId", match = "first")
 data_mean_std <- data_mean_std[,-1]
-
+colNames  = colnames(data_mean_std); 
+for (i in 1:length(colNames)) 
+{
+  colNames[i] = gsub("\\()","",colNames[i])
+  colNames[i] = gsub("-std$","StdDev",colNames[i])
+  colNames[i] = gsub("-mean","Mean",colNames[i])
+  colNames[i] = gsub("^(t)","time",colNames[i])
+  colNames[i] = gsub("^(f)","freq",colNames[i])
+  colNames[i] = gsub("([Gg]ravity)","Gravity",colNames[i])
+  colNames[i] = gsub("([Bb]ody[Bb]ody|[Bb]ody)","Body",colNames[i])
+  colNames[i] = gsub("[Gg]yro","Gyro",colNames[i])
+  colNames[i] = gsub("AccMag","AccMagnitude",colNames[i])
+  colNames[i] = gsub("([Bb]odyaccjerkmag)","BodyAccJerkMagnitude",colNames[i])
+  colNames[i] = gsub("JerkMag","JerkMagnitude",colNames[i])
+  colNames[i] = gsub("GyroMag","GyroMagnitude",colNames[i])
+};
+colnames(data_mean_std) = colNames;
 ##############################################################
 # 4. Appropriately labels the data set with descriptive names.
 ##############################################################
@@ -61,6 +77,8 @@ names(data_mean_std) <- gsub('Freq$',"Frequency",names(data_mean_std))
 ######################################################################################################################
 # 5. Creates a second, independent tidy data set with the average of each variable for each activity and each subject.
 ######################################################################################################################
+finaldata_mean_std  = data_mean_std[,names(data_mean_std) != 'activityType'];
+tidyData    = aggregate(finaldata_mean_std[,names(finaldata_mean_std) != c('activityId','subjectId')],by=list(activityId=finaldata_mean_std$activityId,subjectId = finaldata_mean_std$subjectId),mean);
+tidyData    = merge(tidyData,activityType,by='activityId',all.x=TRUE);
+write.table(tidyData, './tidyData.txt',row.names=TRUE,sep='\t');
 
-data_avg_by_act_sub = ddply(data_mean_std, c("Subject","Activity"), numcolwise(mean))
-write.table(sensor_avg_by_act_sub, file = "data_avg_by_act_sub.txt")
