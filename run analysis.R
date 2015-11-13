@@ -82,7 +82,7 @@ names(data_mean_std) <- gsub('Freq$',"Frequency",names(data_mean_std))
 ######################################################################################################################
 # 5. Creates a second, independent tidy data set with the average of each variable for each activity and each subject.
 ######################################################################################################################
-averages_data <- ddply(all_data, .(subject, activity), function(x) colMeans(x[, 1:66]))
-write.table(averages_data, "averages_data.txt", row.name=FALSE)
+tidy_data <- ddply(all_data, .(subject, activity), function(x) colMeans(x[, 1:66]))
+write.table(tidy_data, "tidy_data.txt", row.name=FALSE)
 
 
