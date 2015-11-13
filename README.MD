@@ -1,4 +1,6 @@
 1. Merges the training and the test sets to create one data set.
+
+
 2. 
 
 After setting the source directory for the files, read into tables the data located in features.txt,activity_labels.txt,
