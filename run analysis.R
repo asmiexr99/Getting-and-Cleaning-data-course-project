@@ -33,38 +33,34 @@ names(sensor_data) <- sensor_labels
 # 2. Extracts only the measurements on the mean and standard deviation for each measurement.
 ############################################################################################
 
-sensor_data_mean_std <- sensor_data[,grepl("mean|std|Subject|ActivityId", names(sensor_data))]
+data_mean_std <- sensor_data[,grepl("mean|std|Subject|ActivityId", names(sensor_data))]
 
 ###########################################################################
 # 3. Uses descriptive activity names to name the activities in the data set
 ###########################################################################
 
-sensor_data_mean_std <- join(sensor_data_mean_std, activity_labels, by = "ActivityId", match = "first")
-sensor_data_mean_std <- sensor_data_mean_std[,-1]
+data_mean_std <- join(data_mean_std, activity_labels, by = "ActivityId", match = "first")
+data_mean_std <- data_mean_std[,-1]
 
 ##############################################################
 # 4. Appropriately labels the data set with descriptive names.
 ##############################################################
 
-# Remove parentheses
-names(sensor_data_mean_std) <- gsub('\\(|\\)',"",names(sensor_data_mean_std), perl = TRUE)
-# Make syntactically valid names
-names(sensor_data_mean_std) <- make.names(names(sensor_data_mean_std))
-# Make clearer names
-names(sensor_data_mean_std) <- gsub('Acc',"Acceleration",names(sensor_data_mean_std))
-names(sensor_data_mean_std) <- gsub('GyroJerk',"AngularAcceleration",names(sensor_data_mean_std))
-names(sensor_data_mean_std) <- gsub('Gyro',"AngularSpeed",names(sensor_data_mean_std))
-names(sensor_data_mean_std) <- gsub('Mag',"Magnitude",names(sensor_data_mean_std))
-names(sensor_data_mean_std) <- gsub('^t',"TimeDomain.",names(sensor_data_mean_std))
-names(sensor_data_mean_std) <- gsub('^f',"FrequencyDomain.",names(sensor_data_mean_std))
-names(sensor_data_mean_std) <- gsub('\\.mean',".Mean",names(sensor_data_mean_std))
-names(sensor_data_mean_std) <- gsub('\\.std',".StandardDeviation",names(sensor_data_mean_std))
-names(sensor_data_mean_std) <- gsub('Freq\\.',"Frequency.",names(sensor_data_mean_std))
-names(sensor_data_mean_std) <- gsub('Freq$',"Frequency",names(sensor_data_mean_std))
+names(data_mean_std) <- make.names(names(data_mean_std))
+names(data_mean_std) <- gsub('Acc',"Acceleration",names(data_mean_std))
+names(data_mean_std) <- gsub('GyroJerk',"AngularAcceleration",names(data_mean_std))
+names(data_mean_std) <- gsub('Gyro',"AngularSpeed",names(data_mean_std))
+names(data_mean_std) <- gsub('Mag',"Magnitude",names(data_mean_std))
+names(data_mean_std) <- gsub('^t',"TimeDomain.",names(data_mean_std))
+names(data_mean_std) <- gsub('^f',"FrequencyDomain.",names(data_mean_std))
+names(data_mean_std) <- gsub('\\.mean',".Mean",names(data_mean_std))
+names(data_mean_std) <- gsub('\\.std',".StandardDeviation",names(data_mean_std))
+names(data_mean_std) <- gsub('Freq\\.',"Frequency.",names(data_mean_std))
+names(data_mean_std) <- gsub('Freq$',"Frequency",names(data_mean_std))
 
 ######################################################################################################################
 # 5. Creates a second, independent tidy data set with the average of each variable for each activity and each subject.
 ######################################################################################################################
 
-sensor_avg_by_act_sub = ddply(sensor_data_mean_std, c("Subject","Activity"), numcolwise(mean))
-write.table(sensor_avg_by_act_sub, file = "sensor_avg_by_act_sub.txt")
+data_avg_by_act_sub = ddply(data_mean_std, c("Subject","Activity"), numcolwise(mean))
+write.table(sensor_avg_by_act_sub, file = "data_avg_by_act_sub.txt")
