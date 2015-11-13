@@ -82,8 +82,7 @@ names(data_mean_std) <- gsub('Freq$',"Frequency",names(data_mean_std))
 ######################################################################################################################
 # 5. Creates a second, independent tidy data set with the average of each variable for each activity and each subject.
 ######################################################################################################################
-finaldata_mean_std  = data_mean_std[,names(data_mean_std) != 'activityType'];
-tidyData    = aggregate(finaldata_mean_std[,names(finaldata_mean_std) != c('activityId','subjectId')],by=list(activityId=finaldata_mean_std$activityId,subjectId = finaldata_mean_std$subjectId),mean);
-tidyData    = merge(tidyData,activityType,by='activityId',all.x=TRUE);
-write.table(tidyData, './tidyData.txt',row.names=TRUE,sep='\t');
+averages_data <- ddply(all_data, .(subject, activity), function(x) colMeans(x[, 1:66]))
+write.table(averages_data, "averages_data.txt", row.name=FALSE)
+
 
