@@ -73,7 +73,6 @@ names(all_data) <- gsub("-mean", "Mean", names(all_data))
 # 5. Creates a second, independent tidy data set with the average of each variable for each activity and each subject.
 ######################################################################################################################
 all_data_master <- data.table(all_data)
-#This takes the mean of every column broken down by participants and activities
 tidy_data <- all_data_master[, lapply(.SD, mean), by = 'participants,activities']
 write.table(tidy_data, file = "tidy_data.txt", row.names = FALSE)
 
