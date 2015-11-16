@@ -8,7 +8,6 @@ if (!getwd() == "./out-of-box-samples") {
 rm(list = ls(all = TRUE))
 library(plyr) 
 library(data.table) 
-library(dplyr) 
 
 get <- tempfile()
 download.file("https://d396qusza40orc.cloudfront.net/getdata%2Fprojectfiles%2FUCI%20HAR%20Dataset.zip",get)
