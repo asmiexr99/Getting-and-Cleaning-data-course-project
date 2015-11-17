@@ -26,7 +26,7 @@ XTest$participants <- SubjectTest[, 1]
 
 # 1. Merges the training and the test sets to create one data set.
 all_data <- rbind(XTrain, XTest)
-duplicated(colnames(all_data))
+duplicated<-duplicated(colnames(all_data))
 all_data <- all_data[, !duplicated(colnames(all_data))]
 
 
